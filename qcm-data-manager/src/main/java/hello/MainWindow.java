@@ -258,6 +258,7 @@ public class MainWindow extends JFrame {
 		JMenuItem mntmCopierLeJson = new JMenuItem("Copier le JSON");
 		mntmCopierLeJson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				updateWrite();
 				QuestionsManager.getInstance().sendAllToClipboard();
 			}
 		});
