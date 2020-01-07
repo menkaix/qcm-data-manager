@@ -1,5 +1,7 @@
 package hello;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,6 +11,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -51,8 +54,8 @@ public class QuestionsManager {
 			currentIndex = 0;
 			questions.add(new Question());
 		}
-		
-		if(currentIndex>=this.questions.size()) {
+
+		if (currentIndex >= this.questions.size()) {
 			currentIndex = this.questions.size() - 1;
 		}
 
@@ -88,7 +91,7 @@ public class QuestionsManager {
 	public int getCurrentIndex() {
 		return currentIndex;
 	}
-	
+
 	public int getQuestionsNumber() {
 		return questions.size();
 	}
@@ -133,6 +136,48 @@ public class QuestionsManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void sendCurrentToClipboard() {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		List<Question> tQ = new ArrayList<Question>();
+
+		tQ.add(currentQuestion());
+
+		String jsonVal;
+
+		try {
+			jsonVal = mapper.writeValueAsString(tQ);
+
+			StringSelection ss = new StringSelection(jsonVal);
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void sendAllToClipboard() {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String jsonVal;
+
+		try {
+			jsonVal = mapper.writeValueAsString(questions);
+
+			StringSelection ss = new StringSelection(jsonVal);
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+
+		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

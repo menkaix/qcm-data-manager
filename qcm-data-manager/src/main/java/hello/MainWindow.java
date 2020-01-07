@@ -36,10 +36,10 @@ public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 5197239002223121921L;
 
 	private String filePath = "";
-	
+
 	private JPanel contentPane;
 	private JTextField textField;
-	private JLabel lblQuestions ;
+	private JLabel lblQuestions;
 
 	private JTextArea txtrMessageCl;
 	private JTextArea txtrQuestion;
@@ -48,62 +48,60 @@ public class MainWindow extends JFrame {
 	private JTextArea txtrRponseFausse_1;
 
 	private void bind() {
-		
-		
-		
+
 		updateRead();
 	}
-	
+
 	private void saveToFile() {
-		
-		if(filePath.length()<=0) {
+
+		if (filePath.length() <= 0) {
 			JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-			
-			int returnValue = jfc.showSaveDialog(this) ;
-			
+
+			int returnValue = jfc.showSaveDialog(this);
+
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = jfc.getSelectedFile();
 				System.out.println(selectedFile.getAbsolutePath());
-				
-				filePath = selectedFile.getAbsolutePath() ;
-				
-				this.setTitle("Editeur de QCM : "+filePath);
+
+				filePath = selectedFile.getAbsolutePath();
+
+				this.setTitle("Editeur de QCM : " + filePath);
 			}
 		}
-		
+
 		QuestionsManager.getInstance().saveToFile(filePath);
 	}
 
 	private void updateWrite() {
-		
-		
+
 		QuestionsManager.getInstance().currentQuestion().setMessage(txtrMessageCl.getText());
 		QuestionsManager.getInstance().currentQuestion().setQuestion(txtrQuestion.getText());
-		
-		if(QuestionsManager.getInstance().currentQuestion().getAnswers().size()<=0) {
+
+		if (QuestionsManager.getInstance().currentQuestion().getAnswers().size() <= 0) {
 			QuestionsManager.getInstance().currentQuestion().getAnswers().add(new Answer());
 		}
-		if(QuestionsManager.getInstance().currentQuestion().getAnswers().size()<=1) {
+		if (QuestionsManager.getInstance().currentQuestion().getAnswers().size() <= 1) {
 			QuestionsManager.getInstance().currentQuestion().getAnswers().add(new Answer());
 		}
-		if(QuestionsManager.getInstance().currentQuestion().getAnswers().size()<=2) {
+		if (QuestionsManager.getInstance().currentQuestion().getAnswers().size() <= 2) {
 			QuestionsManager.getInstance().currentQuestion().getAnswers().add(new Answer());
 		}
-		
+
 		QuestionsManager.getInstance().currentQuestion().getAnswers().get(0).setValue(txtrRponseJuste.getText());
 		QuestionsManager.getInstance().currentQuestion().getAnswers().get(0).setIsTrue(true);
-		
+
 		QuestionsManager.getInstance().currentQuestion().getAnswers().get(1).setValue(txtrRponseFausse.getText());
 		QuestionsManager.getInstance().currentQuestion().getAnswers().get(1).setIsTrue(false);
-		
+
 		QuestionsManager.getInstance().currentQuestion().getAnswers().get(2).setValue(txtrRponseFausse_1.getText());
 		QuestionsManager.getInstance().currentQuestion().getAnswers().get(2).setIsTrue(false);
-		
+
 	}
-	
+
 	private void updateRead() {
-		
-		lblQuestions.setText("Edittion de la Question "+(QuestionsManager.getInstance().getCurrentIndex()+1)+" sur "+QuestionsManager.getInstance().getQuestionsNumber());
+
+		lblQuestions.setText("Edittion de la Question " + (QuestionsManager.getInstance().getCurrentIndex() + 1)
+				+ " sur " + QuestionsManager.getInstance().getQuestionsNumber());
 
 		txtrMessageCl.setText(QuestionsManager.getInstance().currentQuestion().getMessage());
 		txtrQuestion.setText(QuestionsManager.getInstance().currentQuestion().getQuestion());
@@ -134,13 +132,13 @@ public class MainWindow extends JFrame {
 	}
 
 	private void clearFields() {
-		
+
 		txtrMessageCl.setText("");
 		txtrQuestion.setText("");
 		txtrRponseJuste.setText("");
 		txtrRponseFausse.setText("");
 		txtrRponseFausse_1.setText("");
-		
+
 		updateWrite();
 	}
 
@@ -163,32 +161,46 @@ public class MainWindow extends JFrame {
 		JMenuItem mntmOuvrir = new JMenuItem("Ouvrir");
 		mntmOuvrir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(filePath.length()<=0) {
+				if (filePath.length() <= 0) {
 					JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-					
+
 					jfc.setAcceptAllFileFilterUsed(false);
 					jfc.setDialogTitle("Selectionner le fichier de données");
 					FileNameExtensionFilter filter = new FileNameExtensionFilter("Données JSON", "json");
 					jfc.addChoosableFileFilter(filter);
-					
-					int returnValue = jfc.showOpenDialog(MainWindow.this) ;
-					
+
+					int returnValue = jfc.showOpenDialog(MainWindow.this);
+
 					if (returnValue == JFileChooser.APPROVE_OPTION) {
 						File selectedFile = jfc.getSelectedFile();
 						System.out.println(selectedFile.getAbsolutePath());
-						
-						filePath = selectedFile.getAbsolutePath() ;
-						
-						MainWindow.this.setTitle("Editeur de QCM : "+filePath);
+
+						filePath = selectedFile.getAbsolutePath();
+
+						MainWindow.this.setTitle("Editeur de QCM : " + filePath);
 					}
 				}
-				
+
 				QuestionsManager.getInstance().loadFromFile(filePath);
 				QuestionsManager.getInstance().firsQuestion();
 				updateRead();
 
 			}
 		});
+
+		JMenuItem mntmNouveauQuestionnaire = new JMenuItem("Nouveau");
+		mntmNouveauQuestionnaire.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				filePath = "";
+				MainWindow.this.setTitle("Editeur de QCM");
+				QuestionsManager.getInstance().clearQuestions();
+				updateRead();
+
+			}
+		});
+		mntmNouveauQuestionnaire.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
+		mnFichier.add(mntmNouveauQuestionnaire);
 		mntmOuvrir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		mnFichier.add(mntmOuvrir);
 
@@ -205,13 +217,14 @@ public class MainWindow extends JFrame {
 		JMenuItem mntmEnregistrerSous = new JMenuItem("Enregistrer sous");
 		mntmEnregistrerSous.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				filePath = "" ;
+
+				filePath = "";
 				updateWrite();
 				saveToFile();
 			}
 		});
-		mntmEnregistrerSous.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mntmEnregistrerSous
+				.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		mnFichier.add(mntmEnregistrerSous);
 
 		JMenuItem mntmQuitter = new JMenuItem("Quitter");
@@ -220,18 +233,17 @@ public class MainWindow extends JFrame {
 				System.exit(0);
 			}
 		});
-		
+
 		JMenuItem mntmRafraichir = new JMenuItem("Recharger");
 		mntmRafraichir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				if(filePath.length()>0) {
+
+				if (filePath.length() > 0) {
 
 					QuestionsManager.getInstance().loadFromFile(filePath);
 					updateRead();
 				}
-				
-				
+
 			}
 		});
 		mntmRafraichir.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
@@ -239,17 +251,48 @@ public class MainWindow extends JFrame {
 		mntmQuitter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 		mnFichier.add(mntmQuitter);
 
+		JMenu mnEdition = new JMenu("Edition");
+		mnEdition.setMnemonic('e');
+		menuBar.add(mnEdition);
+
+		JMenuItem mntmCopierLeJson = new JMenuItem("Copier le JSON");
+		mntmCopierLeJson.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				QuestionsManager.getInstance().sendAllToClipboard();
+			}
+		});
+		mntmCopierLeJson
+				.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mnEdition.add(mntmCopierLeJson);
+
+		JMenuItem mntmToutEffacer = new JMenuItem("Tout effacer");
+		mntmToutEffacer
+				.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		mntmToutEffacer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int input = JOptionPane.showConfirmDialog(MainWindow.this,
+						"Voulez vous vraiment effacer toutes les questions ?", "Effacer toutes les questions ?",
+						JOptionPane.OK_CANCEL_OPTION);
+				if (input == 0) {
+					QuestionsManager.getInstance().clearQuestions();
+					updateRead();
+				}
+			}
+		});
+		mnEdition.add(mntmToutEffacer);
+
 		JMenu mnAide = new JMenu("Aide");
 		mnAide.setMnemonic('a');
 		menuBar.add(mnAide);
-		
+
 		JMenuItem mntmAPropos = new JMenuItem("A propos");
 		mntmAPropos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int input = JOptionPane.showConfirmDialog(MainWindow.this, 
-		                "Les changements sont pris en compte automatiquement. Enregister le fichier seulement si tout va bien.", "Editer plus facilement des QCM", JOptionPane.DEFAULT_OPTION);
-		        // 0=ok
-		        System.out.println(input);
+				int input = JOptionPane.showConfirmDialog(MainWindow.this,
+						"Les changements sont pris en compte automatiquement. Enregister le fichier seulement si tout va bien.",
+						"Editer plus facilement des QCM", JOptionPane.DEFAULT_OPTION);
+				// 0=ok
+				System.out.println(input);
 			}
 		});
 		mntmAPropos.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
@@ -270,6 +313,7 @@ public class MainWindow extends JFrame {
 			public void focusGained(FocusEvent e) {
 				updateWrite();
 			}
+
 			@Override
 			public void focusLost(FocusEvent e) {
 				updateWrite();
@@ -287,6 +331,7 @@ public class MainWindow extends JFrame {
 			public void focusLost(FocusEvent e) {
 				updateWrite();
 			}
+
 			@Override
 			public void focusGained(FocusEvent e) {
 				updateWrite();
@@ -304,6 +349,7 @@ public class MainWindow extends JFrame {
 			public void focusGained(FocusEvent e) {
 				updateWrite();
 			}
+
 			@Override
 			public void focusLost(FocusEvent e) {
 				updateWrite();
@@ -321,6 +367,7 @@ public class MainWindow extends JFrame {
 			public void focusGained(FocusEvent e) {
 				updateWrite();
 			}
+
 			@Override
 			public void focusLost(FocusEvent e) {
 				updateWrite();
@@ -338,6 +385,7 @@ public class MainWindow extends JFrame {
 			public void focusGained(FocusEvent e) {
 				updateWrite();
 			}
+
 			@Override
 			public void focusLost(FocusEvent e) {
 				updateWrite();
@@ -348,7 +396,7 @@ public class MainWindow extends JFrame {
 		JButton btnEffacer = new JButton("Effacer les champs");
 		btnEffacer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clearFields() ;
+				clearFields();
 			}
 		});
 
@@ -471,11 +519,11 @@ public class MainWindow extends JFrame {
 		JButton btnAller = new JButton("Aller \u00E0");
 		btnAller.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String sTarget = textField.getText() ;
-				
+				String sTarget = textField.getText();
+
 				int iTarget = Integer.parseInt(sTarget);
-				
-				QuestionsManager.getInstance().goToQuestion(iTarget-1);
+
+				QuestionsManager.getInstance().goToQuestion(iTarget - 1);
 				updateRead();
 			}
 		});
@@ -499,17 +547,19 @@ public class MainWindow extends JFrame {
 		JButton btnEffacerLaQuestion = new JButton("Effacer la question");
 		btnEffacerLaQuestion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				int input = JOptionPane.showConfirmDialog(MainWindow.this, QuestionsManager.getInstance().currentQuestion().getMessage() ,"Voulez-vous effacer la question de la liste ?", JOptionPane.OK_CANCEL_OPTION);
 
-				if(input == 0) {
+				int input = JOptionPane.showConfirmDialog(MainWindow.this,
+						QuestionsManager.getInstance().currentQuestion().getMessage(),
+						"Voulez-vous effacer la question de la liste ?", JOptionPane.OK_CANCEL_OPTION);
+
+				if (input == 0) {
 					QuestionsManager.getInstance().deleteCurrentQuestion();
 					updateRead();
 				}
-				
+
 			}
 		});
-		
+
 		JButton btnDupliquerLaQuestion = new JButton("Dupliquer la Question");
 		btnDupliquerLaQuestion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -519,47 +569,37 @@ public class MainWindow extends JFrame {
 			}
 		});
 		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel
+				.createSequentialGroup().addContainerGap()
+				.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addComponent(btnQuestionPrcdente, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
-						.addComponent(btnQuestionSuivante, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
-						.addComponent(btnPremireQuestion, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
-						.addComponent(btnDernireQuestion, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+						.addComponent(btnQuestionSuivante, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 166,
+								Short.MAX_VALUE)
+						.addComponent(btnPremireQuestion, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 166,
+								Short.MAX_VALUE)
+						.addComponent(btnDernireQuestion, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 166,
+								Short.MAX_VALUE)
 						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(textField, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnAller, GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE))
+								.addComponent(textField, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(btnAller, GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE))
 						.addComponent(btnNouvelleQuestion, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
-						.addComponent(btnDupliquerLaQuestion, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE)
+						.addComponent(btnDupliquerLaQuestion, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 166,
+								Short.MAX_VALUE)
 						.addComponent(btnEffacerLaQuestion, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE))
-					.addContainerGap())
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(btnQuestionPrcdente)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnQuestionSuivante)
-					.addGap(18)
-					.addComponent(btnPremireQuestion)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnDernireQuestion)
-					.addGap(18)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnAller))
-					.addGap(18)
-					.addComponent(btnNouvelleQuestion)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnDupliquerLaQuestion)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnEffacerLaQuestion)
-					.addContainerGap(152, Short.MAX_VALUE))
-		);
+				.addContainerGap()));
+		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup().addContainerGap().addComponent(btnQuestionPrcdente)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnQuestionSuivante).addGap(18)
+						.addComponent(btnPremireQuestion).addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnDernireQuestion).addGap(18)
+						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnAller))
+						.addGap(18).addComponent(btnNouvelleQuestion).addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnDupliquerLaQuestion).addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnEffacerLaQuestion).addContainerGap(152, Short.MAX_VALUE)));
 		panel.setLayout(gl_panel);
 		contentPane.setLayout(gl_contentPane);
 
